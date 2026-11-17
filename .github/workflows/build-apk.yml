@@ -1,3 +1,4 @@
+
 name: Build IVA Kiara APK
 
 on:
@@ -9,42 +10,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Scarica progetto
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Estrai progetto Android
+      - name: Extract Android project
         run: |
           ZIP=$(find . -type f -name "IVA_Kiara_Android_Studio_Project.zip" -print -quit)
-          if [ -z "$ZIP" ]; then
-            echo "ZIP Android non trovato"
-            exit 1
-          fi
+          test -n "$ZIP" || { echo "Android ZIP not found"; exit 1; }
           unzip "$ZIP" -d progetto
           PROJECT_DIR=$(dirname "$(find progetto -name settings.gradle -print -quit)")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          test -n "$PROJECT_DIR" || { echo "settings.gradle not found"; exit 1; }
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Configura Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configura Gradle
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Configura Android
+      - name: Setup Android
         uses: android-actions/setup-android@v3
 
-      - name: Compila APK
+      - name: Build APK
         run: |
           cd "$PROJECT_DIR"
           gradle assembleDebug
 
-      - name: Salva APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: IVA-Kiara-APK
           path: progetto/**/app/build/outputs/apk/debug/*.apk
+
 
