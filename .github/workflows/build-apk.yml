@@ -14,7 +14,7 @@ jobs:
 
       - name: Trova ed estrai progetto Android
         run: |
-          ZIP=$(find . -name "IVA_Kiara_Android_Studio_Project.zip" -print -quit)
+          ZIP=$(find . -nameIVA_Kiara_PWA_v1_1.zip-print -quit)
           if [ -z "$ZIP" ]; then
             echo "ZIP del progetto Android non trovato"
             exit 1
